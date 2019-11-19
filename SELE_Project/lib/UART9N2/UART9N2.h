@@ -36,3 +36,8 @@ void UART9N2_SetMPCM();
  * Função que desativa o modo MPCM
  * */
 void UART9N2_ClearMPCM();
+
+/**
+ * 
+ * */
+void UART9N2_send(uint8_t *data, uint8_t length);

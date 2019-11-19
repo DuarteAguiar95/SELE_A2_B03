@@ -1,5 +1,9 @@
 #include "UART9N2.h"
 
+#define MAX485_DIR_DDR  DDRB
+#define MAX485_DIR_PORT PORTB
+#define MAX485_DIR_PIN  PB2
+
 /**
 * Configurar o UART como mestre
 * */
@@ -9,6 +13,11 @@ void MAX485_configMaster();
 * Configurar o UART como escravo
 * */
 void MAX485_config_Slave();
+
+/**
+ * Inicializar o pin de direção do MAX485 
+ * */
+void MAX485_initDirPin();
 
 /**
  * Coloca o módulo MAX485 em modo de transmissão

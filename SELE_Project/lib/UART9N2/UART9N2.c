@@ -1,6 +1,5 @@
 #include "UART9N2.h"
 
-
 // Variaveis locais
 uint8_t RX_estado = 0;
 uint8_t buffer_in_pos = 0;
