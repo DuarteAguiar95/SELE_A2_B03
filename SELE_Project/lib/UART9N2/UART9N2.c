@@ -32,6 +32,28 @@ void UART9N2_ClearMPCM(){
     UCSR0A &= ~_BV(MPCM0);
 }
 
+void UART9N2_send(uint8_t *data, uint8_t length){
+    uint8_t i;
+    for(i = 0; i < length; i++)
+        buffer_out[i] = data[i];
+    buffer_out_size = length;
+    buffer_out_pos = 0;
+    /* Passar camada superior
+    // Esperar que o UART esteja livre
+    while(TX_flag);
+    */
+
+   // Caso seja o mestre enviar oo primeiro byte como endereço do escravo
+    if((UCSR0A & _BV(MPCM0)) == 0){
+        UCSR0B |= _BV(TXB80);
+    }
+
+    UDR0 = buffer_out[buffer_out_pos];
+    buffer_out_pos++;
+
+    TX_flag = 1;
+}
+
 ISR (USART_RX_vect){
     uint8_t recebido = UDR0;
 
@@ -74,4 +96,16 @@ ISR (USART_RX_vect){
     default:
         break;
     }
+}
+
+ISR (USART_UDRE_vect){
+    if(buffer_out_pos < buffer_out_size){
+        UCSR0B &= ~_BV(TXB80);
+        UDR0 = buffer_out[buffer_out_pos];
+        buffer_out_pos++;
+    }
+}
+
+ISR (USART_TX_vect){
+    TX_flag = 0;
 }
