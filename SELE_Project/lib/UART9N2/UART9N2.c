@@ -95,7 +95,6 @@ ISR (USART_RX_vect){
             buffer_in_pos = 0;
             RX_estado = 3;
             RX_flag = 1;
-            PORTB ^= (1<<5);
         }
         break;
     //Rotina do escravo

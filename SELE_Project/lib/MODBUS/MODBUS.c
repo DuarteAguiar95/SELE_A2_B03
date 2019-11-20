@@ -19,7 +19,6 @@ void MODBUS_WriteCoil(uint8_t slaveAddress, uint8_t coilAddress, uint8_t value, 
     MAX485_SendPacket(data, 5);
 
     MAX485_ReceivePacket(packet_R, length_R);
-    PORTB ^= (1<<5);
 }
 
 void MODBUS_ReceiveComand(uint8_t *packet, uint8_t *length){
