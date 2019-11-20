@@ -25,7 +25,6 @@ void MODBUS_ReceiveComand(uint8_t *packet, uint8_t *length){
     MAX485_ReceivePacket(packet, length);
 }
 
-
 void MODBUS_Respond(uint8_t *response, uint8_t length){
     MAX485_SendPacket(response, length);
 }

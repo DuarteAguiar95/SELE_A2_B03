@@ -13,10 +13,10 @@ extern uint8_t RX_flag ;
 //Transmissor
 extern uint8_t buffer_out[BUFFERCAPACITY];
 extern uint8_t buffer_out_size ;
-extern uint8_t TX_flag;
+extern volatile uint8_t TX_flag;
 
 // Variaveis locais
-uint8_t RX_estado = 0;
+uint8_t volatile RX_estado = 0;
 volatile uint8_t buffer_in_pos = 0;
 
 volatile uint8_t buffer_out_pos = 0;
@@ -63,6 +63,20 @@ void UART9N2_send(uint8_t *data, uint8_t length){
     UCSR0B |= _BV(UDRIE0);
 }
 
+ISR (USART_UDRE_vect){
+    buffer_out_pos++;
+    if(buffer_out_pos < buffer_out_size){
+        UCSR0B &= ~_BV(TXB80);
+        UDR0 = buffer_out[buffer_out_pos];
+    }else{
+        UCSR0B &= ~_BV(UDRIE0);
+    }
+}
+
+ISR (USART_TX_vect){
+    TX_flag = 0;
+}
+
 ISR (USART_RX_vect){
     uint8_t recebido = UDR0;
 
@@ -107,16 +121,3 @@ ISR (USART_RX_vect){
     }
 }
 
-ISR (USART_UDRE_vect){
-    buffer_out_pos++;
-    if(buffer_out_pos < buffer_out_size){
-        UCSR0B &= ~_BV(TXB80);
-        UDR0 = buffer_out[buffer_out_pos];
-    }else{
-        UCSR0B &= ~_BV(UDRIE0);
-    }
-}
-
-ISR (USART_TX_vect){
-    TX_flag = 0;
-}

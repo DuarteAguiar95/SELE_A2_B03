@@ -7,16 +7,20 @@ uint8_t RX_flag = 0;
 
 uint8_t buffer_out[BUFFERCAPACITY];
 uint8_t buffer_out_size = 0;
-uint8_t TX_flag = 0;
+uint8_t volatile TX_flag = 0;
 
 void MAX485_configMaster(){
     UART9N2_init();
+    MAX485_initDirPin();
+    MAX485_setRX();
 }
 
 void MAX485_config_Slave(uint8_t address){
-    //endereco = address;
+    endereco = address;
     UART9N2_init();
     UART9N2_SetMPCM();
+    MAX485_initDirPin();
+    MAX485_setRX();
 }
 
 void MAX485_initDirPin(){
@@ -35,7 +39,7 @@ void MAX485_SendPacket(uint8_t *packet, uint8_t length){
     while (TX_flag);
     MAX485_setTX();
     UART9N2_send(packet, length);
-    while(!TX_flag);
+    while(TX_flag);
     MAX485_setRX();
 }
 

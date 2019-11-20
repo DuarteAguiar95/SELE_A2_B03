@@ -14,16 +14,28 @@ int main(void)
     uint8_t response[15];
   #endif
 
+
   #ifdef MASTER
     MODBUS_configMaster();
     #ifdef DEBUG
     initCoils();
     #endif
   #else
-    //MODBUS_configSlave(SLAVE_1);
-    MODBUS_configSlave(SLAVE_2);
+    MODBUS_configSlave(SLAVE_1);
+    //MODBUS_configSlave(SLAVE_2);
 
     initCoils();
+
+    PORTB |= _BV(5);
+    _delay_ms(500);
+    PORTB &= ~_BV(5);
+    _delay_ms(100);
+    PORTB |= _BV(5);
+    _delay_ms(500);
+    PORTB &= ~_BV(5);
+    _delay_ms(100);
+    // check visualy that the leds are conected by blinking twice
+    
   #endif
 
     while (1)
