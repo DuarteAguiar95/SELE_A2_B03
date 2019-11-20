@@ -4,8 +4,8 @@
 #define FOSC 16000000
 #define BUFFERCAPACITY 50
 // Variaveis Globais
-uint32_t BAUDRATE = 250000;
-
+//extern uint32_t BAUDRATE = 250000;
+/*
 //Recetor
 uint8_t buffer_in[BUFFERCAPACITY];
 uint8_t buffer_in_size = 0;
@@ -15,7 +15,7 @@ uint8_t RX_flag = 0;
 //Transmissor
 uint8_t buffer_out[BUFFERCAPACITY];
 uint8_t buffer_out_size = 0;
-uint8_t TX_flag = 0;
+uint8_t TX_flag = 0;*/
 
 //#define MASTER 0
 

@@ -1,10 +1,20 @@
 #include "MAX485.h"
 
+uint8_t buffer_in[BUFFERCAPACITY];
+uint8_t buffer_in_size = 0;
+uint8_t endereco = 0;
+uint8_t RX_flag = 0;
+
+uint8_t buffer_out[BUFFERCAPACITY];
+uint8_t buffer_out_size = 0;
+uint8_t TX_flag = 0;
+
 void MAX485_configMaster(){
     UART9N2_init();
 }
 
-void MAX485_config_Slave(){
+void MAX485_config_Slave(uint8_t address){
+    //endereco = address;
     UART9N2_init();
     UART9N2_SetMPCM();
 }

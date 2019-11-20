@@ -1,10 +1,25 @@
 #include "UART9N2.h"
 
+// Variaveis Globais
+
+extern uint32_t BAUDRATE;
+
+//Recetor
+extern volatile uint8_t buffer_in[BUFFERCAPACITY];
+extern uint8_t buffer_in_size;
+extern uint8_t endereco;
+extern uint8_t RX_flag ;
+
+//Transmissor
+extern uint8_t buffer_out[BUFFERCAPACITY];
+extern uint8_t buffer_out_size ;
+extern uint8_t TX_flag;
+
 // Variaveis locais
 uint8_t RX_estado = 0;
-uint8_t buffer_in_pos = 0;
+volatile uint8_t buffer_in_pos = 0;
 
-uint8_t buffer_out_pos = 0;
+volatile uint8_t buffer_out_pos = 0;
 
 void UART9N2_init(){
     // Definir a taxa de transmissão
@@ -17,7 +32,7 @@ void UART9N2_init(){
 
     // Defenir os registos de controlo
     UCSR0A = _BV(RXC0)   | _BV(TXC0)   | _BV(MPCM0);
-    UCSR0B = _BV(RXCIE0) | _BV(TXCIE0) | _BV(RXEN0)  | _BV(TXEN0) | _BV(UCSZ02);
+    UCSR0B = _BV(RXCIE0) | _BV(TXCIE0) | _BV(UDRIE0) | _BV(RXEN0)  | _BV(TXEN0) | _BV(UCSZ02);
     UCSR0C = _BV(USBS0)  | _BV(UCSZ00) | _BV(UCSZ01);
     
     sei();
@@ -37,12 +52,8 @@ void UART9N2_send(uint8_t *data, uint8_t length){
         buffer_out[i] = data[i];
     buffer_out_size = length;
     buffer_out_pos = 0;
-    /* Passar camada superior
-    // Esperar que o UART esteja livre
-    while(TX_flag);
-    */
 
-   // Caso seja o mestre enviar oo primeiro byte como endereço do escravo
+   // Caso seja o mestre enviar o primeiro byte como endereço do escravo
     if((UCSR0A & _BV(MPCM0)) == 0){
         UCSR0B |= _BV(TXB80);
     }
