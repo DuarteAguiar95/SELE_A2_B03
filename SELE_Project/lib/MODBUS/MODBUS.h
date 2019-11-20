@@ -1,4 +1,5 @@
 #include "MAX485.h"
+#include <avr/io.h>
 
 /**
  * configurar o MC como mestre

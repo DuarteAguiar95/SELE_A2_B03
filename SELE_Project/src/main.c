@@ -1,6 +1,3 @@
-#include <avr/io.h>
-#include <util/delay.h>
-
 #include "main.h"
 
 int main(void)
@@ -55,7 +52,6 @@ int main(void)
 
       #else
         MODBUS_ReceiveComand(packet_R, &length_R);
-        PORTB |= _BV(coilAddr);
 
         if(length_R > 0){
           command = packet_R[0];

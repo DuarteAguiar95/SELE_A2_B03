@@ -1,4 +1,5 @@
 #include "UART9N2.h"
+#include <avr/io.h>
 
 #define MAX485_DIR_DDR  DDRD
 #define MAX485_DIR_PORT PORTD

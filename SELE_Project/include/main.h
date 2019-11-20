@@ -1,4 +1,6 @@
 #include "MODBUS.h"
+#include <avr/io.h>
+#include <util/delay.h>
 
 #define MASTER
 #define DEBUG
