@@ -31,9 +31,9 @@ void UART9N2_init(){
     UBRR0L = (uint8_t)((UBRR0_val) & 0x00FF);
 
     // Defenir os registos de controlo
-    UCSR0A = _BV(RXC0)   | _BV(TXC0)   | _BV(MPCM0);
-    UCSR0B = _BV(RXCIE0) | _BV(TXCIE0) | _BV(UDRIE0) | _BV(RXEN0)  | _BV(TXEN0) | _BV(UCSZ02);
     UCSR0C = _BV(USBS0)  | _BV(UCSZ00) | _BV(UCSZ01);
+    UCSR0B = _BV(RXCIE0) | _BV(TXCIE0) | _BV(RXEN0)  | _BV(TXEN0) | _BV(UCSZ02);
+    UCSR0A = _BV(RXC0)   | _BV(TXC0);
     
     sei();
 }
@@ -53,15 +53,14 @@ void UART9N2_send(uint8_t *data, uint8_t length){
     buffer_out_size = length;
     buffer_out_pos = 0;
 
+    TX_flag = 1;
    // Caso seja o mestre enviar o primeiro byte como endereço do escravo
     if((UCSR0A & _BV(MPCM0)) == 0){
+        UCSR0B &= ~(1<<TXB80);
         UCSR0B |= _BV(TXB80);
     }
-
     UDR0 = buffer_out[buffer_out_pos];
-    buffer_out_pos++;
-
-    TX_flag = 1;
+    UCSR0B |= _BV(UDRIE0);
 }
 
 ISR (USART_RX_vect){
@@ -109,10 +108,12 @@ ISR (USART_RX_vect){
 }
 
 ISR (USART_UDRE_vect){
+    buffer_out_pos++;
     if(buffer_out_pos < buffer_out_size){
         UCSR0B &= ~_BV(TXB80);
         UDR0 = buffer_out[buffer_out_pos];
-        buffer_out_pos++;
+    }else{
+        UCSR0B &= ~_BV(UDRIE0);
     }
 }
 

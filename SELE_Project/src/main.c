@@ -16,6 +16,9 @@ int main(void)
 
   #ifdef MASTER
     MODBUS_configMaster();
+    #ifdef DEBUG
+    initCoils();
+    #endif
   #else
     //MODBUS_configSlave(SLAVE_1);
     MODBUS_configSlave(SLAVE_2);
