@@ -3,7 +3,7 @@
 uint8_t buffer_in[BUFFERCAPACITY];
 uint8_t buffer_in_size = 0;
 uint8_t endereco = 0;
-uint8_t RX_flag = 0;
+uint8_t volatile RX_flag = 0;
 
 uint8_t buffer_out[BUFFERCAPACITY];
 uint8_t buffer_out_size = 0;
@@ -36,7 +36,7 @@ void MAX485_setRX(){
 }
 
 void MAX485_SendPacket(uint8_t *packet, uint8_t length){
-    while (TX_flag);
+    while (TX_flag || RX_flag == 1);
     MAX485_setTX();
     UART9N2_send(packet, length);
     while(TX_flag);
@@ -45,7 +45,7 @@ void MAX485_SendPacket(uint8_t *packet, uint8_t length){
 
 void MAX485_ReceivePacket(uint8_t *packet, uint8_t *length){
     uint8_t i;
-    while(!RX_flag);
+    while(RX_flag != 2);
 
     for(i = 0; i < buffer_in_size; i++)
         packet[i] = buffer_in[i];

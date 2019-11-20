@@ -6,9 +6,9 @@ extern uint32_t BAUDRATE;
 
 //Recetor
 extern volatile uint8_t buffer_in[BUFFERCAPACITY];
-extern uint8_t buffer_in_size;
+extern volatile uint8_t buffer_in_size;
 extern uint8_t endereco;
-extern uint8_t RX_flag ;
+extern volatile uint8_t RX_flag ;
 
 //Transmissor
 extern uint8_t buffer_out[BUFFERCAPACITY];
@@ -17,7 +17,7 @@ extern volatile uint8_t TX_flag;
 
 // Variaveis locais
 uint8_t volatile RX_estado = 0;
-volatile uint8_t buffer_in_pos = 0;
+ uint8_t volatile buffer_in_pos = 0;
 
 volatile uint8_t buffer_out_pos = 0;
 
@@ -80,17 +80,22 @@ ISR (USART_TX_vect){
 ISR (USART_RX_vect){
     uint8_t recebido = UDR0;
 
+
     switch (RX_estado){
-    case 0: // Verificar se é mestre ou escravo
+    // Verificar se é mestre ou escravo
+    case 0: 
         if((UCSR0A & _BV(MPCM0)) == _BV(MPCM0)){   // É escravo pois está no modo MCPM
             if((recebido & 0x0F) == (endereco)){  // O mestre refere-se a este escravo
-                UCSR0A &= _BV(MPCM0);
+                UCSR0A &= ~_BV(MPCM0);
                 RX_estado = 1;
+                RX_flag = 1;
             }
         }else{  // É mestre
             buffer_in_size = recebido;
             buffer_in_pos = 0;
             RX_estado = 3;
+            RX_flag = 1;
+            PORTB ^= (1<<5);
         }
         break;
     //Rotina do escravo
@@ -105,15 +110,16 @@ ISR (USART_RX_vect){
         if(buffer_in_pos >= buffer_in_size){
             UCSR0A |= _BV(MPCM0);
             RX_estado = 0;
-            RX_flag = 1;
+            RX_flag = 2;
         }
         break;
+    // Rotina do mestre
     case 3:
         buffer_in[buffer_in_pos] = recebido;
         buffer_in_pos++;
         if(buffer_in_pos >= buffer_in_size){
             RX_estado = 0;
-            RX_flag = 1;
+            RX_flag = 2;
         }
         break;
     default:

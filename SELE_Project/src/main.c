@@ -17,44 +17,46 @@ int main(void)
 
   #ifdef MASTER
     MODBUS_configMaster();
+
     #ifdef DEBUG
     initCoils();
+    PORTB &= ~(1<<5);
     #endif
+
   #else
-    MODBUS_configSlave(SLAVE_1);
-    //MODBUS_configSlave(SLAVE_2);
+    //MODBUS_configSlave(SLAVE_1);
+    MODBUS_configSlave(SLAVE_2);
 
-    initCoils();
-
-    PORTB |= _BV(5);
-    _delay_ms(500);
-    PORTB &= ~_BV(5);
-    _delay_ms(100);
-    PORTB |= _BV(5);
-    _delay_ms(500);
-    PORTB &= ~_BV(5);
-    _delay_ms(100);
-    // check visualy that the leds are conected by blinking twice
-    
+    initCoils();    
   #endif
 
     while (1)
     {
       #ifdef MASTER
-        MODBUS_WriteCoil(SLAVE_1, 5, 0, packet_R, &length_R);
+        MODBUS_WriteCoil(SLAVE_1, 5, 1, packet_R, &length_R);
+        _delay_us(100);
         MODBUS_WriteCoil(SLAVE_2, 5, 0, packet_R, &length_R);
         _delay_ms(1000);
+
+        MODBUS_WriteCoil(SLAVE_1, 5, 0, packet_R, &length_R);
+        _delay_us(100);
+        MODBUS_WriteCoil(SLAVE_2, 5, 1, packet_R, &length_R);
+        _delay_ms(1000);
+
         MODBUS_WriteCoil(SLAVE_1, 5, 1, packet_R, &length_R);
+        _delay_us(100);
+        MODBUS_WriteCoil(SLAVE_2, 5, 1, packet_R, &length_R);
+        _delay_ms(1000);
+
+        MODBUS_WriteCoil(SLAVE_1, 5, 0, packet_R, &length_R);
+        _delay_us(100);
         MODBUS_WriteCoil(SLAVE_2, 5, 0, packet_R, &length_R);
         _delay_ms(1000);
-        MODBUS_WriteCoil(SLAVE_1, 5, 1, packet_R, &length_R);
-        MODBUS_WriteCoil(SLAVE_2, 5, 1, packet_R, &length_R);
-        _delay_ms(1000);
-        MODBUS_WriteCoil(SLAVE_1, 5, 0, packet_R, &length_R);
-        MODBUS_WriteCoil(SLAVE_2, 5, 1, packet_R, &length_R);
-        _delay_ms(1000);
+
       #else
         MODBUS_ReceiveComand(packet_R, &length_R);
+        PORTB |= _BV(coilAddr);
+
         if(length_R > 0){
           command = packet_R[0];
           switch (command)
@@ -67,9 +69,11 @@ int main(void)
               PORTB &= ~_BV(coilAddr);
             else
               PORTB |= _BV(coilAddr);
-            response[0] = command;
-            response[1] = coilAddr;
-            MODBUS_Respond(response, 2);
+            response[0] = 2;
+            response[1] = command;
+            response[2] = coilAddr;
+            _delay_ms(20);
+            MODBUS_Respond(response, 3);
             break;
           
           default:

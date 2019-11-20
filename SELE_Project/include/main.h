@@ -1,6 +1,6 @@
 #include "MODBUS.h"
 
-//#define MASTER
+#define MASTER
 #define DEBUG
 
 #define SLAVE_1 0x01
